@@ -46,7 +46,7 @@ public class YoutubeLiveRecordClient {
 				+ channelIdwrapper.getChannelId();
 	}
 
-	@Scheduled(initialDelay = 0, fixedDelay = 60000)
+	@Scheduled(initialDelay = 0, fixedDelay = 900000)
 	public void searchJunLive() {
 		if (threadPoolExecutor.getActiveCount() != 0) {
 			return;
