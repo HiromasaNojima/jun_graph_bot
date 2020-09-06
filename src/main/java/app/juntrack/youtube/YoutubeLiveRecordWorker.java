@@ -15,6 +15,7 @@ import app.juntrack.common.data.mapper.LiveRecordMapper;
 import app.juntrack.common.data.mapper.TweetRecordMapper;
 import app.juntrack.twitter.TwitterClient;
 import app.juntrack.youtube.http.client.YouubeApiClient;
+import app.juntrack.youtube.http.endpoint.YoutubeEndpoint;
 import app.juntrack.youtube.http.response.videos.Item;
 import app.juntrack.youtube.http.response.videos.LiveStreamingDetails;
 import app.juntrack.youtube.http.response.videos.YoutubeVideosListResponse;
@@ -25,10 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @Scope("prototype")
 @Slf4j
 public class YoutubeLiveRecordWorker implements Runnable {
-
-	private static final String API_NAME = "Videos: list";
-
-	private static final String URL_BASE = "https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=";
 
 	private RecordDto recordDto;
 
@@ -52,7 +49,12 @@ public class YoutubeLiveRecordWorker implements Runnable {
 	public void run() {
 		log.info("YoutubeLiveで配信中なので記録を開始します。 {}", recordDto);
 
-		record(recordDto);
+		try {
+			record(recordDto);
+		} catch (Exception exc) {
+			log.error("想定外の異常が発生しましたので記録を終了します。{}", exc);
+			return;
+		}
 
 		log.info("YoutubeLiveの配信を終了したので記録を終了します。 {}", recordDto);
 	}
@@ -61,8 +63,9 @@ public class YoutubeLiveRecordWorker implements Runnable {
 		while (true) {
 			YouubeApiClient<YoutubeVideosListResponse> client = new YouubeApiClient<YoutubeVideosListResponse>(
 					youtubeCredentialWrapper.getCredential());
-			YoutubeVideosListResponse videosResponse = client.sendGetRequest(URL_BASE + recordDto.getContentId(),
-					API_NAME, YoutubeVideosListResponse.class);
+			YoutubeVideosListResponse videosResponse = client.sendGetRequest(
+					YoutubeEndpoint.VIDEOS_LIST.getUrl() + recordDto.getContentId(),
+					YoutubeEndpoint.VIDEOS_LIST.getApiName(), YoutubeVideosListResponse.class);
 			List<Item> items = videosResponse.getItems();
 			if (items == null || items.size() == 0) {
 				break;

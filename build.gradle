@@ -41,6 +41,8 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     compile 'org.twitter4j:twitter4j-core:4.0.3'
+
+    implementation 'org.apache.commons:commons-lang3:3.11'
 }
 
 test {
