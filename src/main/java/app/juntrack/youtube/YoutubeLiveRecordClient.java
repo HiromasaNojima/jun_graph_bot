@@ -65,7 +65,7 @@ public class YoutubeLiveRecordClient {
 			if (count.compareAndSet(15, 0)) {
 				recordDto = createRecordDtoBySearchList();
 			} else {
-				recordDto = createRecorDtoIfExistNotRecordedLive();
+				recordDto = createRecorDtoByTweet();
 			}
 
 			if (recordDto == null) {
@@ -99,7 +99,7 @@ public class YoutubeLiveRecordClient {
 				.build();
 	}
 
-	private RecordDto createRecorDtoIfExistNotRecordedLive() {
+	private RecordDto createRecorDtoByTweet() {
 		String videoId = twitterClient.getVideoIdOfTweet();
 		if (videoId == null) {
 			return null;
