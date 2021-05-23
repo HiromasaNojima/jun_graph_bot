@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,11 +21,15 @@ public class ChartApiRequestJsonCreator {
 	@Autowired
 	protected LiveRecordMapper recordMapper;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChartApiRequestJsonCreator.class);
+
 	private static SimpleDateFormat FORMATTER = new SimpleDateFormat("M/d HH:mm");
 
 	public String createRequestJson(String contentId) {
 		List<LiveRecord> liveRecords = recordMapper.selectByContentIdOrderByRegisteredAtAsc(contentId);
-		return new Gson().toJson(createChartApiRequest(liveRecords));
+		String requestJson = new Gson().toJson(createChartApiRequest(liveRecords));
+		LOGGER.info("QuickChartAPIに送信するリクエストJSON{}", requestJson);
+		return requestJson;
 	}
 
 	private ChartApiRequest createChartApiRequest(List<LiveRecord> liveRecords) {
