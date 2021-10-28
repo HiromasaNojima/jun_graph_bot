@@ -13,7 +13,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 @Slf4j
-public class YouubeApiClient<T extends YoutubeResponse> {
+public class YoutubeApiClient<T extends YoutubeResponse> {
 
 	private static final List<String> SCOPES = List.of("https://www.googleapis.com/auth/youtube");
 
@@ -21,7 +21,7 @@ public class YouubeApiClient<T extends YoutubeResponse> {
 
 	private final OkHttpClient httpClient = new OkHttpClient();
 
-	public YouubeApiClient(String credential) {
+	public YoutubeApiClient(String credential) {
 		this.credential = credential;
 	}
 

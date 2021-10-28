@@ -18,7 +18,7 @@ import app.juntrack.common.StreamingSiteType;
 import app.juntrack.common.data.domain.LiveRecord;
 import app.juntrack.common.data.mapper.LiveRecordMapper;
 import app.juntrack.twitter.TwitterClient;
-import app.juntrack.youtube.http.client.YouubeApiClient;
+import app.juntrack.youtube.http.client.YoutubeApiClient;
 import app.juntrack.youtube.http.endpoint.YoutubeEndpoint;
 import app.juntrack.youtube.http.response.search.YoutubeSearchListResponse;
 import app.juntrack.youtube.http.response.videos.Item;
@@ -82,7 +82,7 @@ public class YoutubeLiveRecordClient {
 	}
 
 	private RecordDto createRecordDtoBySearchList() {
-		YouubeApiClient<YoutubeSearchListResponse> tubeClient = new YouubeApiClient<YoutubeSearchListResponse>(
+		YoutubeApiClient<YoutubeSearchListResponse> tubeClient = new YoutubeApiClient<YoutubeSearchListResponse>(
 				youtubeCredentialWrapper.getCredential());
 		YoutubeSearchListResponse searchList = tubeClient.sendGetRequest(
 				YoutubeEndpoint.SEARCH_LIST.getUrl() + channelIdWrapper.getChannelId(),
@@ -111,7 +111,7 @@ public class YoutubeLiveRecordClient {
 			return null;
 		}
 
-		YouubeApiClient<YoutubeVideosListResponse> client = new YouubeApiClient<YoutubeVideosListResponse>(
+		YoutubeApiClient<YoutubeVideosListResponse> client = new YoutubeApiClient<YoutubeVideosListResponse>(
 				youtubeCredentialWrapper.getCredential());
 		YoutubeVideosListResponse videosResponse = client.sendGetRequest(
 				YoutubeEndpoint.VIDEOS_LIST.getUrl() + videoId,

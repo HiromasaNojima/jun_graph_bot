@@ -14,7 +14,7 @@ import app.juntrack.common.data.domain.TweetRecord;
 import app.juntrack.common.data.mapper.LiveRecordMapper;
 import app.juntrack.common.data.mapper.TweetRecordMapper;
 import app.juntrack.twitter.TwitterClient;
-import app.juntrack.youtube.http.client.YouubeApiClient;
+import app.juntrack.youtube.http.client.YoutubeApiClient;
 import app.juntrack.youtube.http.endpoint.YoutubeEndpoint;
 import app.juntrack.youtube.http.response.videos.Item;
 import app.juntrack.youtube.http.response.videos.LiveStreamingDetails;
@@ -61,7 +61,7 @@ public class YoutubeLiveRecordWorker implements Runnable {
 
 	public void record(RecordDto recordDto) {
 		while (true) {
-			YouubeApiClient<YoutubeVideosListResponse> client = new YouubeApiClient<YoutubeVideosListResponse>(
+			YoutubeApiClient<YoutubeVideosListResponse> client = new YoutubeApiClient<YoutubeVideosListResponse>(
 					youtubeCredentialWrapper.getCredential());
 			YoutubeVideosListResponse videosResponse = client.sendGetRequest(
 					YoutubeEndpoint.VIDEOS_LIST.getUrl() + recordDto.getContentId(),
