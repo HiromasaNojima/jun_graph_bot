@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import app.juntrack.chart.client.ChartApiClient;
 import app.juntrack.common.RecordDto;
+import app.juntrack.common.StreamingSiteType;
+import app.juntrack.twitch.client.http.endpoint.TwitchEndpoint;
 import app.juntrack.youtube.http.endpoint.YoutubeEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
@@ -32,9 +34,18 @@ public class TwitterClient {
 
 	public void tweetJunLive(RecordDto recordDto) {
 		Twitter twitter = new TwitterFactory().getInstance();
-		String tweetContent = messageSource.getMessage("jun.tweet.message",
-				new String[] { recordDto.getTitle(), YoutubeEndpoint.WATCH.getUrl() + recordDto.getContentId() },
-				Locale.JAPAN);
+
+		String tweetContent = null;
+		if (recordDto.getStreamingSiteType() == StreamingSiteType.YOUTUBE) {
+			tweetContent = messageSource.getMessage("jun.tweet.message",
+					new String[] { recordDto.getTitle(), YoutubeEndpoint.WATCH.getUrl() + recordDto.getContentId() },
+					Locale.JAPAN);
+		} else {
+			tweetContent = messageSource.getMessage("jun.tweet.message",
+					new String[] { recordDto.getTitle(), TwitchEndpoint.VIDEOS.getUrl() + recordDto.getContentId() },
+					Locale.JAPAN);
+		}
+
 		log.info(tweetContent);
 		StatusUpdate statusUpdate = new StatusUpdate(tweetContent);
 

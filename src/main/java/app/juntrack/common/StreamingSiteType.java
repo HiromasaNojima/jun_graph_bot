@@ -2,7 +2,9 @@ package app.juntrack.common;
 
 public enum StreamingSiteType {
 
-	YOUTUBE("youtube");
+	YOUTUBE("youtube"),
+
+	TWITCH("twitch");
 
 	private String value;
 
