@@ -42,7 +42,7 @@ public class TwitterClient {
 					Locale.JAPAN);
 		} else {
 			tweetContent = messageSource.getMessage("jun.tweet.message",
-					new String[] { recordDto.getTitle(), TwitchEndpoint.VIDEOS.getUrl() + recordDto.getContentId() },
+					new String[] { recordDto.getTitle(), TwitchEndpoint.WATCH.getUrl() + recordDto.getVideoId() },
 					Locale.JAPAN);
 		}
 

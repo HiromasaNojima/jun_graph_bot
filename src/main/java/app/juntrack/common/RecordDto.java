@@ -1,7 +1,9 @@
 package app.juntrack.common;
 
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 public class RecordDto {
 
 	@Getter
@@ -13,10 +15,14 @@ public class RecordDto {
 	@Getter
 	private final String title;
 
+	@Getter
+	private final String videoId;
+
 	private RecordDto(Builder builder) {
 		this.contentId = builder.contentId;
 		this.streamingSiteType = builder.streamingSiteType;
 		this.title = builder.title;
+		this.videoId = builder.videoId;
 	}
 
 	public static class Builder {
@@ -26,6 +32,8 @@ public class RecordDto {
 		private StreamingSiteType streamingSiteType;
 
 		private String title;
+
+		private String videoId;
 
 		public RecordDto build() {
 			return new RecordDto(this);
@@ -46,19 +54,11 @@ public class RecordDto {
 			return this;
 		}
 
-	}
+		public Builder setVideoId(String videoId) {
+			this.videoId = videoId;
+			return this;
+		}
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("RecordDto [contentId=");
-		builder.append(contentId);
-		builder.append(", streamingSiteType=");
-		builder.append(streamingSiteType);
-		builder.append(", title=");
-		builder.append(title);
-		builder.append("]");
-		return builder.toString();
 	}
 
 }

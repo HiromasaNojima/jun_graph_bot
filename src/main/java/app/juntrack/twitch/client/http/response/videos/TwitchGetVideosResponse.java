@@ -1,5 +1,5 @@
 
-package app.juntrack.twitch.client.http.response.streams;
+package app.juntrack.twitch.client.http.response.videos;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import lombok.ToString;
 
 @Generated("jsonschema2pojo")
 @ToString
-public class TwitchGetStreamsResponse implements TwitchResponse {
+public class TwitchGetVideosResponse implements TwitchResponse {
 
 	@SerializedName("data")
 	@Expose

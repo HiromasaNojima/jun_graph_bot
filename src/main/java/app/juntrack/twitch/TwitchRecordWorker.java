@@ -14,8 +14,13 @@ import app.juntrack.common.data.domain.LiveRecord;
 import app.juntrack.common.data.domain.TweetRecord;
 import app.juntrack.common.data.mapper.LiveRecordMapper;
 import app.juntrack.common.data.mapper.TweetRecordMapper;
-import app.juntrack.twitch.client.http.client.TwitchGetStreamsClient;
+import app.juntrack.twitch.client.http.client.TwitchApiClient;
+import app.juntrack.twitch.client.http.endpoint.TwitchEndpoint;
 import app.juntrack.twitch.client.http.response.streams.TwitchGetStreamsResponse;
+import app.juntrack.twitch.client.http.response.videos.Data;
+import app.juntrack.twitch.client.http.response.videos.TwitchGetVideosResponse;
+import app.juntrack.twitch.wrapper.TwitchCredentialWrapper;
+import app.juntrack.twitch.wrapper.TwitchUserIdWrapper;
 import app.juntrack.twitter.TwitterClient;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +41,10 @@ public class TwitchRecordWorker implements Runnable {
 	TwitterClient twitterClient;
 
 	@Autowired
-	private TwitchGetStreamsClient getStreamsClient;
+	TwitchCredentialWrapper credential;
+
+	@Autowired
+	TwitchUserIdWrapper userId;
 
 	public void setRecordDto(RecordDto recordDto) {
 		this.recordDto = recordDto;
@@ -58,7 +66,12 @@ public class TwitchRecordWorker implements Runnable {
 
 	public void record(RecordDto recordDto) {
 		while (true) {
-			TwitchGetStreamsResponse response = getStreamsClient.getStreams();
+			TwitchGetStreamsResponse response = new TwitchApiClient<TwitchGetStreamsResponse>(
+					credential.getAccessToken(),
+					credential.getClientId()).sendGetRequest(
+							TwitchEndpoint.STREAMS.getUrl() + "?user_id=" + userId.getUserId(),
+							TwitchEndpoint.STREAMS.getApiName(), TwitchGetStreamsResponse.class);
+
 			if (response == null || CollectionUtils.isEmpty(response.getData())) {
 				break;
 			}
@@ -95,6 +108,38 @@ public class TwitchRecordWorker implements Runnable {
 		if (tweetRecord != null) {
 			log.info("すでにツイート済みなので、ツイートしません。 {}", tweetRecord);
 			return;
+		}
+
+		while (true) {
+			TwitchGetVideosResponse response = new TwitchApiClient<TwitchGetVideosResponse>(
+					credential.getAccessToken(),
+					credential.getClientId()).sendGetRequest(
+							TwitchEndpoint.VIDEOS.getUrl() + "?user_id=" + userId.getUserId(),
+							TwitchEndpoint.VIDEOS.getApiName(), TwitchGetVideosResponse.class);
+
+			if (response == null) {
+				return;
+			}
+
+			for (Data data : response.getData()) {
+				if (!StringUtils.equals(recordDto.getContentId(), data.getStreamId())) {
+					continue;
+				}
+
+				recordDto = new RecordDto.Builder().setContentId(recordDto.getContentId()).setVideoId(data.getId())
+						.setStreamingSiteType(StreamingSiteType.TWITCH).setTitle(recordDto.getTitle()).build();
+				break;
+			}
+
+			if (recordDto.getVideoId() != null) {
+				break;
+			}
+
+			try {
+				Thread.sleep(30000);
+			} catch (InterruptedException e) {
+				log.error("想定外のエラーが発生しました。{}", e);
+			}
 		}
 
 		twitterClient.tweetJunLive(recordDto);

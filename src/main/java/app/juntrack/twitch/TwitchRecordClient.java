@@ -13,8 +13,11 @@ import org.springframework.util.CollectionUtils;
 
 import app.juntrack.common.RecordDto;
 import app.juntrack.common.StreamingSiteType;
-import app.juntrack.twitch.client.http.client.TwitchGetStreamsClient;
+import app.juntrack.twitch.client.http.client.TwitchApiClient;
+import app.juntrack.twitch.client.http.endpoint.TwitchEndpoint;
 import app.juntrack.twitch.client.http.response.streams.TwitchGetStreamsResponse;
+import app.juntrack.twitch.wrapper.TwitchCredentialWrapper;
+import app.juntrack.twitch.wrapper.TwitchUserIdWrapper;
 
 @Component
 public class TwitchRecordClient {
@@ -24,10 +27,13 @@ public class TwitchRecordClient {
 	private final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1, 3L, TimeUnit.SECONDS, queue);
 
 	@Autowired
-	private TwitchGetStreamsClient streamsClient;
+	ApplicationContext context;
 
 	@Autowired
-	ApplicationContext context;
+	TwitchCredentialWrapper credential;
+
+	@Autowired
+	TwitchUserIdWrapper userId;
 
 	@Scheduled(initialDelay = 0, fixedDelayString = "${jun.live.search.interval}")
 	public void searchJunLive() {
@@ -35,7 +41,10 @@ public class TwitchRecordClient {
 			return;
 		}
 
-		TwitchGetStreamsResponse response = streamsClient.getStreams();
+		TwitchGetStreamsResponse response = new TwitchApiClient<TwitchGetStreamsResponse>(credential.getAccessToken(),
+				credential.getClientId()).sendGetRequest(
+						TwitchEndpoint.STREAMS.getUrl() + "?user_id=" + userId.getUserId(),
+						TwitchEndpoint.STREAMS.getApiName(), TwitchGetStreamsResponse.class);
 		if (response == null || CollectionUtils.isEmpty(response.getData())) {
 			return;
 		}
